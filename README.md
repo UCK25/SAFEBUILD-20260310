@@ -145,42 +145,8 @@ Solo aparece si Python no esta instalado, para mostrar el mensaje de error en es
 ## Arquitectura del Sistema
 
 SafeBuild Monitor sigue una arquitectura cliente-servidor local (localhost):
+![Diagrama de arquitectura](./SafeBuild-Diagram.png)
 
-```
-[EJECUTAR.bat]
-    |
-    |-- Verifica Python -> Error en espanol si falta
-    |
-    |-- VBScript -> Relanza como proceso oculto
-                        |
-                [python flask_server.py]  <-- Servidor en http://0.0.0.0:8000
-                        |
-              __________|__________
-             |          |          |
-        [Modelo]   [SQLite DB]  [Capturas]
-        best.pt   safety_.db   captures/
-             |
-         YOLOv8n
-         (Inferencia CPU)
-
-[Navegador Web - Chrome/Edge]
-    |
-    |-- GET /dashboard  -> dashboard.html
-    |-- GET /manage     -> manage.html
-    |
-    |-- Camera (getUserMedia)
-    |       |
-    |       |-- canvas.toBlob() -> POST /detect_json -> JSON con boxes + QR
-    |       |
-    |       |-- renderOverlayLocal() -> strokeRect escalado sobre video
-    |
-    |-- POST /api/heartbeat (cada 1 segundo)
-            |
-            |-- watchdog: si no hay latido en 15s -> os._exit(0)
-```
-
-El diagrama completo en formato Mermaid se encuentra en el archivo arquitectura_mermaid.txt.
-Puede renderizarse en https://mermaid.live/ o en cualquier editor compatible (VS Code, GitHub, Notion, etc.)
 
 ### Descripcion de capas
 
@@ -497,33 +463,6 @@ CREATE TABLE qr_downloads (
     target_user_id  INTEGER,    -- FK: users.id
     download_path   TEXT
 )
-```
-
-### Funciones principales (database.py)
-```python
-# Usuarios
-register_user(username, password, qr_code, role) -> bool
-authenticate_user(username, password) -> (id, username, role) | None
-get_user_by_qr(qr_code) -> (id, username, role) | None
-list_users() -> [(id, username, role, qr_code), ...]
-update_user(user_id, username, qr_code) -> bool
-update_user_role(user_id, role) -> bool
-delete_user(user_id) -> bool
-reset_user_password(performed_by, target_user_id, new_password) -> bool
-
-# Incidentes
-register_incident(camera_name, incident_type, description, user_identified, evidence_path, dedupe_window_minutes)
-list_incidents() -> [(id, camera_name, type, timestamp, ...), ...]
-update_incident(incident_id, status)
-
-# Reportes
-generate_report(output_path) -> str              # CSV
-generate_report_xlsx(year, month, output_path) -> str  # Excel con imagenes
-generate_report_by_period(year, month, output_path) -> str
-
-# Auditoría
-log_audit(performed_by, action, target_user_id, details)
-get_audit_logs(limit=100) → [logs del usuario y cambios]
 ```
 
 ---
