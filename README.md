@@ -724,7 +724,7 @@ Si el proceso persiste, terminar manualmente:
 | YOLOv8 | https://docs.ultralytics.com/ |
 | Flask | https://flask.palletsprojects.com/ |
 | pyzbar | https://github.com/NaturalHistoryMuseum/pyzbar |
-| Metodo William Fine | Implementado en observer.py |
+| Metodo William Fine | https://www.unir.net/revista/ingenieria/metodo-william-t-fine/ |
 | openpyxl | https://openpyxl.readthedocs.io/ |
 
 ---
